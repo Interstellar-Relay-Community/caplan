@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+use crate::types::config::read_config_file;
 use axum::Router;
 use clap::Parser;
 use tracing_subscriber::layer::SubscriberExt;
@@ -40,6 +41,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // TODO: Read config
+    let cfg = read_config_file(&args.config).await;
 
     let app = Router::new();
 
