@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 use crate::types::config::read_config_file;
+use crate::types::AppState;
 use axum::Router;
 use clap::Parser;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{EnvFilter, Registry};
 
+pub(crate) mod activitypub;
 pub(crate) mod types;
 
 #[derive(Debug, Parser)]
@@ -43,7 +45,11 @@ async fn main() -> anyhow::Result<()> {
     // TODO: Read config
     let cfg = read_config_file(&args.config).await;
 
-    let app = Router::new();
+    let state = AppState {};
+
+    let app = Router::new()
+        .nest("/activitypub", activitypub::get_service().await)
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
 
